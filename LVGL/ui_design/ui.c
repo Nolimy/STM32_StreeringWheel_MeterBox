@@ -57,6 +57,10 @@ void ui_event_Screen1_Bar1(lv_event_t * e)
         _ui_bar_increment(ui_Screen1_Bar1, 20, LV_ANIM_ON);
     }
 }
+static void set_value(void * indic, int32_t v)
+{
+    lv_meter_set_indicator_end_value(ui_speedMeter, indic, v);
+}
 
 ///////////////////// SCREENS ////////////////////
 void ui_Screen1_screen_init(void)
@@ -95,7 +99,7 @@ void ui_Screen2_screen_init(void)
     lv_obj_clear_flag(ui_Screen2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Screen2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Screen2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
+		
     ui_Screen2_Label3 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Screen2_Label3, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Screen2_Label3, LV_SIZE_CONTENT);    /// 1
@@ -108,18 +112,49 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_style_text_opa(ui_Screen2_Label3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Screen2_Label3, &ui_font_FastOne, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_speedMeter = ui_speedMeter_create(ui_Screen2);
-    lv_obj_set_x(ui_speedMeter, -128);
-    lv_obj_set_y(ui_speedMeter, -25);
+		ui_speedMeter = lv_meter_create(ui_Screen2);
+		//lv_obj_center(ui_speedMeter);
+	
+		/*Remove the circle from the middle*/
+    lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_INDICATOR);
+		lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_MAIN);
+		
+    lv_obj_set_x(ui_speedMeter, 20);
+    lv_obj_set_y(ui_speedMeter, 50);
+		lv_obj_set_size(ui_speedMeter, 200, 200);
+		
+		 
+		
+		 /*Add a scale first*/
+    lv_meter_scale_t * scale = lv_meter_add_scale(ui_speedMeter);
+    lv_meter_set_scale_ticks(ui_speedMeter, scale, 60, 0, 0, lv_color_hex(0x000000));//set the minor tick
+    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x41A0FF), 100);
+    lv_meter_set_scale_range(ui_speedMeter, scale, 0, 120, 270, 90);
+		
+		lv_meter_indicator_t * indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x41A0FF), 0);
+		
+		/*Create an animation to set the value*/
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_exec_cb(&a, set_value);
+    lv_anim_set_values(&a, 0, 120);
+    lv_anim_set_repeat_delay(&a, 500);
+    lv_anim_set_playback_delay(&a, 100);
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
 
-    lv_obj_set_style_text_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0x000000),
-                                LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
-                              LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0xFFFFFF),
-                              LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
-                            LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_anim_set_time(&a, 2000);
+    lv_anim_set_playback_time(&a, 500);
+    lv_anim_set_var(&a, indic1);
+    lv_anim_start(&a);
+//    ui_speedMeter = ui_speedMeter_create(ui_Screen2);
+//    lv_obj_set_style_text_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0x000000),
+//                                LV_PART_MAIN | LV_STATE_DEFAULT);
+//    lv_obj_set_style_text_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
+//                              LV_PART_MAIN | LV_STATE_DEFAULT);
+//    lv_obj_set_style_bg_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0xFFFFFF),
+//                              LV_PART_MAIN | LV_STATE_DEFAULT);
+//    lv_obj_set_style_bg_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
+//                            LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Screen2_Label1 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Screen2_Label1, LV_SIZE_CONTENT);   /// 1
