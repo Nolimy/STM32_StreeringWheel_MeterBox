@@ -29,7 +29,6 @@ extern lv_obj_t * ui_Screen1_Bar1;
 extern lv_obj_t * ui_Screen1_Image1;
 extern lv_obj_t * ui_Screen2;
 extern lv_obj_t * ui_Screen2_Label3;
-extern lv_obj_t * ui_speedMeter;
 extern lv_obj_t * ui_Screen2_Label1;
 extern lv_obj_t * ui_Screen2_Label2;
 extern lv_obj_t * ui_Screen2_Label4;
@@ -43,18 +42,20 @@ extern lv_obj_t * ui_Screen2_Label10;
 extern lv_obj_t * ui_Screen2_Label11;
 extern lv_obj_t * ui_Screen2_Label12;
 extern lv_obj_t * ui_Screen2_Label13;
+extern lv_obj_t * ui_Screen2_Label14;
+extern lv_obj_t * ui_Screen2_Label15;
 
 
 LV_IMG_DECLARE(ui_img_splashmini_png);    // assets\splashmini.png
 
 
 LV_FONT_DECLARE(ui_font_bigNumber40);
+LV_FONT_DECLARE(ui_font_bigNumber_18);
+LV_FONT_DECLARE(ui_font_bigNumber_25);
 LV_FONT_DECLARE(ui_font_FastOne);
+LV_FONT_DECLARE(ui_font_icon_bettery);
 LV_FONT_DECLARE(ui_font_PlayFairBig);
 LV_FONT_DECLARE(ui_font_PlayFairSmall);
-LV_FONT_DECLARE(ui_font_icon_bettery);
-LV_FONT_DECLARE(ui_font_bigNumber_25);
-LV_FONT_DECLARE(ui_font_bigNumber_18);
 
 
 void ui_init(void);

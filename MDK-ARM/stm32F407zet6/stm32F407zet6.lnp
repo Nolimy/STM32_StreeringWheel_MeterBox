@@ -82,7 +82,7 @@
 "stm32f407zet6\lv_img_decoder.o"
 "stm32f407zet6\lv_flex.o"
 "stm32f407zet6\lv_grid.o"
-"stm32f407zet6\lv_bmp_1.o"
+"stm32f407zet6\lv_bmp.o"
 "stm32f407zet6\lv_ffmpeg.o"
 "stm32f407zet6\lv_freetype.o"
 "stm32f407zet6\lv_fs_fatfs.o"

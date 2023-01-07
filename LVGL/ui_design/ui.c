@@ -5,7 +5,6 @@
 
 #include "ui.h"
 #include "ui_helpers.h"
-#include "ui_comp.h"
 
 ///////////////////// VARIABLES ////////////////////
 void ui_event_Screen1(lv_event_t * e);
@@ -15,7 +14,6 @@ lv_obj_t * ui_Screen1_Bar1;
 lv_obj_t * ui_Screen1_Image1;
 lv_obj_t * ui_Screen2;
 lv_obj_t * ui_Screen2_Label3;
-lv_obj_t * ui_speedMeter;
 lv_obj_t * ui_Screen2_Label1;
 lv_obj_t * ui_Screen2_Label2;
 lv_obj_t * ui_Screen2_Label4;
@@ -29,7 +27,9 @@ lv_obj_t * ui_Screen2_Label10;
 lv_obj_t * ui_Screen2_Label11;
 lv_obj_t * ui_Screen2_Label12;
 lv_obj_t * ui_Screen2_Label13;
-
+lv_obj_t * ui_Screen2_Label14;
+lv_obj_t * ui_Screen2_Label15;
+lv_obj_t * ui_speedMeter;
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
     #error "LV_COLOR_DEPTH should be 16bit to match SquareLine Studio's settings"
@@ -49,6 +49,13 @@ void ui_event_Screen1(lv_event_t * e)
         _ui_bar_set_property(ui_Screen1_Bar1, _UI_BAR_PROPERTY_VALUE_WITH_ANIM, 100);
     }
 }
+
+static void set_value(void * indic, int32_t v)
+{
+    lv_meter_set_indicator_end_value(ui_speedMeter, indic, v);
+}
+
+
 void ui_event_Screen1_Bar1(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -56,10 +63,6 @@ void ui_event_Screen1_Bar1(lv_event_t * e)
     if(event_code == LV_EVENT_SCREEN_LOAD_START) {
         _ui_bar_increment(ui_Screen1_Bar1, 20, LV_ANIM_ON);
     }
-}
-static void set_value(void * indic, int32_t v)
-{
-    lv_meter_set_indicator_end_value(ui_speedMeter, indic, v);
 }
 
 ///////////////////// SCREENS ////////////////////
@@ -99,7 +102,7 @@ void ui_Screen2_screen_init(void)
     lv_obj_clear_flag(ui_Screen2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Screen2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Screen2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-		
+
     ui_Screen2_Label3 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Screen2_Label3, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Screen2_Label3, LV_SIZE_CONTENT);    /// 1
@@ -119,8 +122,8 @@ void ui_Screen2_screen_init(void)
     lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_INDICATOR);
 		lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_MAIN);
 		
-    lv_obj_set_x(ui_speedMeter, 20);
-    lv_obj_set_y(ui_speedMeter, 50);
+    lv_obj_set_x(ui_speedMeter, 15);
+    lv_obj_set_y(ui_speedMeter, 40);
 		lv_obj_set_size(ui_speedMeter, 200, 200);
 		
 		 
@@ -128,7 +131,7 @@ void ui_Screen2_screen_init(void)
 		 /*Add a scale first*/
     lv_meter_scale_t * scale = lv_meter_add_scale(ui_speedMeter);
     lv_meter_set_scale_ticks(ui_speedMeter, scale, 60, 0, 0, lv_color_hex(0x000000));//set the minor tick
-    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x41A0FF), 100);
+    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x41A0FF), -100);
     lv_meter_set_scale_range(ui_speedMeter, scale, 0, 120, 270, 90);
 		
 		lv_meter_indicator_t * indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x41A0FF), 0);
@@ -146,16 +149,8 @@ void ui_Screen2_screen_init(void)
     lv_anim_set_playback_time(&a, 500);
     lv_anim_set_var(&a, indic1);
     lv_anim_start(&a);
-//    ui_speedMeter = ui_speedMeter_create(ui_Screen2);
-//    lv_obj_set_style_text_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0x000000),
-//                                LV_PART_MAIN | LV_STATE_DEFAULT);
-//    lv_obj_set_style_text_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
-//                              LV_PART_MAIN | LV_STATE_DEFAULT);
-//    lv_obj_set_style_bg_color(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), lv_color_hex(0xFFFFFF),
-//                              LV_PART_MAIN | LV_STATE_DEFAULT);
-//    lv_obj_set_style_bg_opa(ui_comp_get_child(ui_speedMeter, UI_COMP_SPEEDMETER_SPEEDUNIT), 255,
-//                            LV_PART_MAIN | LV_STATE_DEFAULT);
-
+		
+		
     ui_Screen2_Label1 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Screen2_Label1, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Screen2_Label1, LV_SIZE_CONTENT);    /// 1
@@ -297,12 +292,33 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_style_text_opa(ui_Screen2_Label13, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Screen2_Label13, &ui_font_bigNumber_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_Screen2_Label14 = lv_label_create(ui_Screen2);
+    lv_obj_set_width(ui_Screen2_Label14, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Screen2_Label14, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Screen2_Label14, -123);
+    lv_obj_set_y(ui_Screen2_Label14, -21);
+    lv_obj_set_align(ui_Screen2_Label14, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Screen2_Label14, "000");
+    lv_obj_set_style_text_color(ui_Screen2_Label14, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Screen2_Label14, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Screen2_Label14, &ui_font_bigNumber_25, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Screen2_Label15 = lv_label_create(ui_Screen2);
+    lv_obj_set_width(ui_Screen2_Label15, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Screen2_Label15, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Screen2_Label15, -124);
+    lv_obj_set_y(ui_Screen2_Label15, 8);
+    lv_obj_set_align(ui_Screen2_Label15, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Screen2_Label15, "KMH");
+    lv_obj_set_style_text_color(ui_Screen2_Label15, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Screen2_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_Screen2_Label15, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Screen2_Label15, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
 }
 
 void ui_init(void)
 {
-    LV_EVENT_GET_COMP_CHILD = lv_event_register_id();
-
     lv_disp_t * dispp = lv_disp_get_default();
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                false, LV_FONT_DEFAULT);
