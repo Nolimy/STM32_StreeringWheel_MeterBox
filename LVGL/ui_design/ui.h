@@ -22,29 +22,31 @@ extern "C" {
 #include "lvgl.h"
 #endif
 
-void ui_event_Screen1(lv_event_t * e);
-extern lv_obj_t * ui_Screen1;
-void ui_event_Screen1_Bar1(lv_event_t * e);
-extern lv_obj_t * ui_Screen1_Bar1;
-extern lv_obj_t * ui_Screen1_Image1;
-extern lv_obj_t * ui_Screen2;
-extern lv_obj_t * ui_Screen2_Label3;
-extern lv_obj_t * ui_Screen2_Label1;
-extern lv_obj_t * ui_Screen2_Label2;
-extern lv_obj_t * ui_Screen2_Label4;
-extern lv_obj_t * ui_Screen2_Label5;
-extern lv_obj_t * ui_Screen2_Label6;
-extern lv_obj_t * ui_Screen2_Bar1;
-extern lv_obj_t * ui_Screen2_Label7;
-extern lv_obj_t * ui_Screen2_Label8;
-extern lv_obj_t * ui_Screen2_Label9;
-extern lv_obj_t * ui_Screen2_Label10;
-extern lv_obj_t * ui_Screen2_Label11;
+void startupAnimation_Animation(lv_obj_t * TargetObject, int delay);
+void startupFadeBar_Animation(lv_obj_t * TargetObject, int delay);
+void startupFadeLogo_Animation(lv_obj_t * TargetObject, int delay);
+void ui_event_startup(lv_event_t * e);
+extern lv_obj_t * ui_startup;
+extern lv_obj_t * ui_startupBar;
+extern lv_obj_t * ui_startupLogo;
+extern lv_obj_t * ui_home;
+extern lv_obj_t * ui_logoLable;
+extern lv_obj_t * ui_rpmNum;
+extern lv_obj_t * ui_rpmUnit;
+extern lv_obj_t * ui_rGearLable;
+extern lv_obj_t * ui_nGearLable;
+extern lv_obj_t * ui_dGearLable;
+extern lv_obj_t * ui_socValue;
+extern lv_obj_t * ui_socIcon;
+extern lv_obj_t * ui_speedMode;
+extern lv_obj_t * ui_ecoMode;
+extern lv_obj_t * ui_batAlarm;
+extern lv_obj_t * ui_;
 extern lv_obj_t * ui_Screen2_Label12;
 extern lv_obj_t * ui_Screen2_Label13;
-extern lv_obj_t * ui_Screen2_Label14;
-extern lv_obj_t * ui_Screen2_Label15;
-
+extern lv_obj_t * ui_speedNum;
+extern lv_obj_t * ui_speedUnitLable;
+extern uint8_t barValue;
 
 LV_IMG_DECLARE(ui_img_splashmini_png);    // assets\splashmini.png
 
@@ -59,6 +61,9 @@ LV_FONT_DECLARE(ui_font_PlayFairSmall);
 
 
 void ui_init(void);
+void barValueMonitor();
+void getTheBarValue();
+
 
 #ifdef __cplusplus
 } /*extern "C"*/

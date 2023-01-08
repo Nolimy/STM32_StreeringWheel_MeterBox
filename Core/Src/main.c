@@ -142,7 +142,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	
+	uint16_t barCount_t = 1;
+//	uint8_t barUpdataFlag = 1;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -186,8 +187,8 @@ int main(void)
 	//ws2812_blue(2); 
 	//HAL_Delay(500);
 	//ws2812_blue(1);
-	//LCD_Init();
-	//LCD_Clear(WHITE);
+	LCD_Init();
+	LCD_Clear(BLACK);
 #if LVGL_DEBUG	
 	lv_init();
 	lv_port_disp_init();  // lvgl显示接口初始化,放在lv_init()的后面
@@ -219,8 +220,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//		printf("hello \n");
+		//printf("hello \n");
 		//CAN1_Send_Test();
+		if(barCount_t % 20 == 0 && barCount_t <=2000)
+		{
+			barValue+=1;
+			//printf("bar value is %d\r\n", lv_bar_get_value(ui_startupBar));
+			barValueMonitor();
+		}
+		if(barValue <= 100)
+		{
+			barCount_t++;
+			if(barCount_t == 40)
+				getTheBarValue();
+			if(barValue == 100)
+			{
+				getTheBarValue();
+				barValue = 102;
+			}	
+		}
+			
+			
 #if LVGL_DEBUG		
 		lv_task_handler(); // lvgl的事务处理	
 #endif
