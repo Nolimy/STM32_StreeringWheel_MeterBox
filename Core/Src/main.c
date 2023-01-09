@@ -76,6 +76,7 @@ unsigned int write_bytes=0;
 char read_buff[8192];
 unsigned int read_bytes=0;
 #endif
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -125,10 +126,9 @@ void SPI_FLASH_WriteTest()
 #endif
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static unsigned char ledState = 0;
     if (htim == (&htim3))
-    {
-        lv_tick_inc(1);//lvgl的1ms中断
+    {	
+      lv_tick_inc(1);//lvgl的1ms中断
 			//printf("tick\n");
     }
 }
@@ -142,7 +142,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint16_t barCount_t = 1;
+
 //	uint8_t barUpdataFlag = 1;
   /* USER CODE END 1 */
 
@@ -220,27 +220,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		//printf("hello \n");
-		//CAN1_Send_Test();
-		if(barCount_t % 20 == 0 && barCount_t <=2000)
-		{
-			barValue+=1;
-			//printf("bar value is %d\r\n", lv_bar_get_value(ui_startupBar));
-			barValueMonitor();
-		}
-		if(barValue <= 100)
-		{
-			barCount_t++;
-			if(barCount_t == 40)
-				getTheBarValue();
-			if(barValue == 100)
-			{
-				getTheBarValue();
-				barValue = 102;
-			}	
-		}
-			
-			
+		if(barFlag == 1)
+			sendEventCode();
+		//CAN1_Send_Test();		
 #if LVGL_DEBUG		
 		lv_task_handler(); // lvgl的事务处理	
 #endif

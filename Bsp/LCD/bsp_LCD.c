@@ -338,5 +338,7 @@ void LCD_Init()
 	LCD_WRITE_REG(0x29);//DISPLAY ON       
   HAL_Delay(50); 
 	LCD_WRITE_REG(0x2c); //Write memory start   
+	
+	LCD_Clear(BLACK);
 	   
 }

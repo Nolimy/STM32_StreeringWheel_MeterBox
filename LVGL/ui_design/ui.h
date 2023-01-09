@@ -22,9 +22,6 @@ extern "C" {
 #include "lvgl.h"
 #endif
 
-void startupAnimation_Animation(lv_obj_t * TargetObject, int delay);
-void startupFadeBar_Animation(lv_obj_t * TargetObject, int delay);
-void startupFadeLogo_Animation(lv_obj_t * TargetObject, int delay);
 void ui_event_startup(lv_event_t * e);
 extern lv_obj_t * ui_startup;
 extern lv_obj_t * ui_startupBar;
@@ -46,7 +43,8 @@ extern lv_obj_t * ui_Screen2_Label12;
 extern lv_obj_t * ui_Screen2_Label13;
 extern lv_obj_t * ui_speedNum;
 extern lv_obj_t * ui_speedUnitLable;
-extern uint8_t barValue;
+
+extern uint8_t barFlag;
 
 LV_IMG_DECLARE(ui_img_splashmini_png);    // assets\splashmini.png
 
@@ -61,9 +59,7 @@ LV_FONT_DECLARE(ui_font_PlayFairSmall);
 
 
 void ui_init(void);
-void barValueMonitor();
-void getTheBarValue();
-
+void sendEventCode();
 
 #ifdef __cplusplus
 } /*extern "C"*/

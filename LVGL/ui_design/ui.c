@@ -5,12 +5,9 @@
 
 #include "ui.h"
 #include "ui_helpers.h"
-#include "usart.h"
+#include "ui_comp.h"
 
 ///////////////////// VARIABLES ////////////////////
-void startupAnimation_Animation(lv_obj_t * TargetObject, int delay);
-void startupFadeBar_Animation(lv_obj_t * TargetObject, int delay);
-void startupFadeLogo_Animation(lv_obj_t * TargetObject, int delay);
 void ui_event_startup(lv_event_t * e);
 lv_obj_t * ui_startup;
 lv_obj_t * ui_startupBar;
@@ -32,14 +29,10 @@ lv_obj_t * ui_Screen2_Label12;
 lv_obj_t * ui_Screen2_Label13;
 lv_obj_t * ui_speedNum;
 lv_obj_t * ui_speedUnitLable;
+lv_obj_t * ui_speedMeter;
 
-uint32_t STARTUP_BAR_VALUE_100;
-uint32_t STARTUP_BAR_VALUE_CHANGED;
-uint32_t STARTUP_BAR_VALUE_40;
-uint8_t barValue;
-void ui_event_startup(lv_event_t * e);
-void ui_event_playStartupAnimation(lv_event_t * e);
-
+uint32_t BAR_LOAD_OVER;
+uint8_t barFlag = 1;
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
     #error "LV_COLOR_DEPTH should be 16bit to match SquareLine Studio's settings"
@@ -49,117 +42,36 @@ void ui_event_playStartupAnimation(lv_event_t * e);
 #endif
 
 ///////////////////// ANIMATIONS ////////////////////
-void startupAnimation_Animation(lv_obj_t * TargetObject, int delay)
-{
-    lv_anim_t PropertyAnimation_0;
-    lv_anim_init(&PropertyAnimation_0);
-    lv_anim_set_time(&PropertyAnimation_0, 2000);
-    lv_anim_set_user_data(&PropertyAnimation_0, TargetObject);
-    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_opacity);
-    lv_anim_set_values(&PropertyAnimation_0, 0, 255);
-    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_ease_in);
-    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
-    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
-    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_early_apply(&PropertyAnimation_0, false);
-    lv_anim_start(&PropertyAnimation_0);
-
-}
-void startupFadeBar_Animation(lv_obj_t * TargetObject, int delay)
-{
-    lv_anim_t PropertyAnimation_0;
-    lv_anim_init(&PropertyAnimation_0);
-    lv_anim_set_time(&PropertyAnimation_0, 1000);
-    lv_anim_set_user_data(&PropertyAnimation_0, TargetObject);
-    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_opacity);
-    lv_anim_set_values(&PropertyAnimation_0, 255, 0);
-    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_ease_out);
-    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
-    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
-    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_early_apply(&PropertyAnimation_0, false);
-    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_opacity);
-    lv_anim_start(&PropertyAnimation_0);
-
-}
-void startupFadeLogo_Animation(lv_obj_t * TargetObject, int delay)
-{
-    lv_anim_t PropertyAnimation_0;
-    lv_anim_init(&PropertyAnimation_0);
-    lv_anim_set_time(&PropertyAnimation_0, 1000);
-    lv_anim_set_user_data(&PropertyAnimation_0, TargetObject);
-    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_opacity);
-    lv_anim_set_values(&PropertyAnimation_0, 255, 0);
-    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_ease_out);
-    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
-    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
-    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_early_apply(&PropertyAnimation_0, false);
-    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_opacity);
-    lv_anim_start(&PropertyAnimation_0);
-
-}
 
 ///////////////////// FUNCTIONS ////////////////////
+static void set_value(void * bar, int32_t v)
+{
+    lv_bar_set_value(bar, v, LV_ANIM_OFF);
+}
+
+
 void ui_event_startup(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_SCREEN_LOAD_START) {
-        _ui_bar_set_property(ui_startupBar, _UI_BAR_PROPERTY_VALUE_WITH_ANIM, 100);
-    }
-    if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(ui_home, LV_SCR_LOAD_ANIM_FADE_ON, 1000, 0);
+    if(event_code == BAR_LOAD_OVER) {
+        _ui_screen_change(ui_home, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0);
     }
 }
 
-void ui_event_playStartupAnimation(lv_event_t * e)
+void sendEventCode()
 {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == STARTUP_BAR_VALUE_100)
-		{
-			startupFadeLogo_Animation(ui_startupBar, 0);
-			startupFadeBar_Animation(ui_startupLogo,0);
-			
-		}
-    else if(event_code == STARTUP_BAR_VALUE_40)
-		{
-			startupAnimation_Animation(ui_startup, 0);
-		}
+	if(lv_bar_get_value(ui_startupBar) == 100)
+	{
+		barFlag = 0;
+		lv_event_send(ui_startup, BAR_LOAD_OVER, NULL);
+	}
 }
-void getTheBarValue()
-{
-		if(lv_bar_get_value(ui_startupBar) == 80)
-		{
-			usartTxFlag = 1;
-			printf("end bar value is %d\r\n", lv_bar_get_value(ui_startupBar));
-			lv_event_send(ui_startup, STARTUP_BAR_VALUE_40, NULL);
-		}
-		else if(lv_bar_get_value(ui_startupBar) == 100)
-		{
-			usartTxFlag = 1;
-			printf("end bar value is %d\r\n", lv_bar_get_value(ui_startupBar));
-			lv_event_send(ui_startup, STARTUP_BAR_VALUE_100, NULL);
-		}	
-}
-void barValueMonitor()
-{
-	lv_event_send(ui_startup, STARTUP_BAR_VALUE_CHANGED, NULL);
-}
-
 ///////////////////// SCREENS ////////////////////
 void ui_startup_screen_init(void)
 {
     ui_startup = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_startup, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_startup, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_startup, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_startup, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -169,7 +81,15 @@ void ui_startup_screen_init(void)
     lv_obj_set_x(ui_startupBar, -3);
     lv_obj_set_y(ui_startupBar, 40);
     lv_obj_set_align(ui_startupBar, LV_ALIGN_CENTER);
-    lv_obj_set_style_anim_time(ui_startupBar, 4000, LV_PART_MAIN | LV_STATE_DEFAULT);
+    //lv_obj_set_style_anim_time(ui_startupBar, 4000, LV_PART_MAIN | LV_STATE_DEFAULT);
+	
+		lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, ui_startupBar);
+    lv_anim_set_values(&a, 0, 100);
+    lv_anim_set_exec_cb(&a, set_value);
+		lv_anim_set_time(&a, 4000);
+		lv_anim_start(&a);
 
     ui_startupLogo = lv_img_create(ui_startup);
     lv_img_set_src(ui_startupLogo, &ui_img_splashmini_png);
@@ -181,16 +101,9 @@ void ui_startup_screen_init(void)
     lv_obj_add_flag(ui_startupLogo, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_startupLogo, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    lv_obj_add_event_cb(ui_startup, ui_event_startup, LV_EVENT_ALL, NULL);
-		STARTUP_BAR_VALUE_100 = lv_event_register_id();
-		STARTUP_BAR_VALUE_CHANGED = lv_event_register_id();
-		STARTUP_BAR_VALUE_40 = lv_event_register_id();
-		usartTxFlag = 1;
-		printf("bar value is %d\r\n", lv_bar_get_value(ui_startupBar));
-		printf("startup_init ok\r\n");
-    lv_obj_add_event_cb(ui_startup, ui_event_startup, STARTUP_BAR_VALUE_CHANGED, NULL);
-		lv_obj_add_event_cb(ui_startup, ui_event_playStartupAnimation, LV_EVENT_ALL, NULL);
+		BAR_LOAD_OVER = lv_event_register_id();
 		
+    lv_obj_add_event_cb(ui_startup, ui_event_startup, LV_EVENT_ALL, NULL);
 
 }
 void ui_home_screen_init(void)
@@ -201,6 +114,38 @@ void ui_home_screen_init(void)
     lv_obj_set_style_bg_color(ui_home, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_home, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+		ui_speedMeter = lv_meter_create(ui_home);
+		//lv_obj_center(ui_speedMeter);
+	
+		/*Remove the circle from the middle*/
+    lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_INDICATOR);
+		lv_obj_remove_style(ui_speedMeter, NULL, LV_PART_MAIN);
+		
+    lv_obj_set_x(ui_speedMeter, 15);
+    lv_obj_set_y(ui_speedMeter, 40);
+		lv_obj_set_size(ui_speedMeter, 200, 200);
+		 /*Add a scale first*/
+    lv_meter_scale_t * scale = lv_meter_add_scale(ui_speedMeter);
+    lv_meter_set_scale_ticks(ui_speedMeter, scale, 90, 0, 0, lv_color_hex(0x000000));//set the minor tick
+    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x41A0FF), -100);
+    lv_meter_set_scale_range(ui_speedMeter, scale, 0, 120, 270, 90);
+		lv_meter_indicator_t * indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x41A0FF), 0);
+		/*Create an animation to set the value*/
+//    lv_anim_t a;
+//    lv_anim_init(&a);
+//    lv_anim_set_exec_cb(&a, set_value);
+//    lv_anim_set_values(&a, 0, 120);
+//    lv_anim_set_repeat_delay(&a, 500);
+//    lv_anim_set_playback_delay(&a, 100);
+//    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+
+//    lv_anim_set_time(&a, 2000);
+//    lv_anim_set_playback_time(&a, 500);
+//    lv_anim_set_var(&a, indic1);
+//    lv_anim_start(&a);
+		
+		
+		
     ui_logoLable = lv_label_create(ui_home);
     lv_obj_set_width(ui_logoLable, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_logoLable, LV_SIZE_CONTENT);    /// 1
@@ -381,6 +326,8 @@ void ui_home_screen_init(void)
 
 void ui_init(void)
 {
+    LV_EVENT_GET_COMP_CHILD = lv_event_register_id();
+
     lv_disp_t * dispp = lv_disp_get_default();
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                false, LV_FONT_DEFAULT);
