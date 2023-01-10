@@ -222,6 +222,13 @@ int main(void)
   {
 		if(barFlag == 1)
 			sendEventCode();
+		if(barFlag == 0)
+		{
+			speed+=10;
+			if(speed == 120)
+				speed = 0;
+		}
+			
 		//CAN1_Send_Test();		
 #if LVGL_DEBUG		
 		lv_task_handler(); // lvgl的事务处理	
@@ -281,79 +288,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	if(huart->Instance == USART1)
-	{
-		if(Uart1_Rx_Cnt >= 255)  //溢出判断
-			{
-				Uart1_Rx_Cnt = 0;
-				memset(RxBuffer1,0x00,sizeof(RxBuffer1));
-				HAL_UART_Transmit(&huart1, (uint8_t *)"stack Over Flow\r\n", 10,0xFFFF);
-			}
-			else
-			{
-				RxBuffer1[Uart1_Rx_Cnt++] = aRxBuffer1;   //接收数据转存
 
-				if((RxBuffer1[Uart1_Rx_Cnt-1] == 0x0A)&&(RxBuffer1[Uart1_Rx_Cnt-2] == 0x0D)) //判断结束位
-				{
-					//HAL_UART_Transmit(&huart1, (uint8_t *)&RxBuffer1, Uart1_Rx_Cnt,0xFFFF); //将收到的信息发送出去
-					HAL_UART_Transmit(&huart3, (uint8_t *)&RxBuffer1, Uart1_Rx_Cnt,0xFFFF); //将收到的信息发送出去
-		      //while(HAL_UART_GetState(&huart1) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
-					while(HAL_UART_GetState(&huart3) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
-					Uart1_Rx_Cnt = 0;
-					memset(RxBuffer1,0x00,sizeof(RxBuffer1)); //清空数组
-				}
-			}
-
-			HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer1, 1);   //再开启接收中断
-
-	}
-	if(huart->Instance == USART3)
-	{
-			//if(Uart3RxOverFlag == 0)
-			{
-				if(Uart3_Rx_Cnt >= 255)  //溢出判断
-				{
-					Uart3_Rx_Cnt = 0;
-					memset(RxBuffer3,0x00,sizeof(RxBuffer3));
-					HAL_UART_Transmit(&huart3, (uint8_t *)"stack Over Flow\r\n", 10,0xFFFF);
-				}
-				else
-				{
-					RxBuffer3[Uart3_Rx_Cnt++] = aRxBuffer3;   //接收数据转存
-					if((RxBuffer3[Uart3_Rx_Cnt-1] == 0x0A)&&(RxBuffer3[Uart3_Rx_Cnt-2] == 0x0D)&&Uart3_Rx_Cnt!=2) //判断结束位\r\n
-					{
-						if(strcmp((const char*)RxBuffer3,(const char*)"\r\n") == 0 ||strcmp((const char*)RxBuffer3,(const char*)" ") == 0 || strlen(RxBuffer3) == 0)
-						{
-							//过滤无效字符串
-							memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
-							HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
-						}
-						if(strstr((const char*)RxBuffer3,(const char*)"OK"))	
-						{
-							okFlag = 1;
-							memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
-							HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
-						}
-						if(RxBuffer3[0] == 0x0D && RxBuffer3[1] == 0x0A)
-						{
-							RxBuffer3[0] = '-';
-							RxBuffer3[1] = '-';
-							strcpy(Buffer, RxBuffer3);
-						}
-						//HAL_UART_Transmit(&huart1, (uint8_t *)&RxBuffer3, Uart3_Rx_Cnt,0xFFFF); //将收到的信息发送出去
-						//			while(HAL_UART_GetState(&huart1) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
-						Uart3_Rx_Cnt = 0;
-						//memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
-					}
-				}
-			HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
-		}
-
-		
-	}
-}
 /* USER CODE END 4 */
 
 /**

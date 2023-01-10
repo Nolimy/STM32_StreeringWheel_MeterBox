@@ -39,4 +39,4 @@ stm32f407zet6/bsp_bc260y.o: ..\Bsp\BC260Y\bsp_BC260Y.c \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim_ex.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_uart.h \
-  ..\Core\Inc\gpio.h
+  ..\Core\Inc\gpio.h ..\Bsp\CAN\bsp_CAN.h ..\Core\Inc\can.h

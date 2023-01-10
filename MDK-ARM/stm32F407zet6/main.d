@@ -40,12 +40,11 @@ stm32f407zet6/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Core\Inc\spi.h ..\Core\Inc\tim.h ..\Core\Inc\usart.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h ..\Core\Inc\gpio.h \
   ..\Core\Inc\fsmc.h ..\Bsp\LCD\bsp_LCD.h ..\Bsp\BC260Y\bsp_BC260Y.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
-  ..\Bsp\WS2812B\bsp_WS2812B.h ..\Bsp\CAN\bsp_CAN.h ..\LVGL\lvgl.h \
-  ..\LVGL\src\misc\lv_log.h ..\LVGL\src\misc\..\lv_conf_internal.h \
-  ..\LVGL\src\lv_conf_kconfig.h ..\LVGL\lv_conf.h \
-  ..\LVGL\src\misc\lv_types.h ..\LVGL\src\misc\lv_timer.h \
-  ..\LVGL\src\misc\..\hal\lv_hal_tick.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h ..\Bsp\CAN\bsp_CAN.h \
+  ..\Bsp\WS2812B\bsp_WS2812B.h ..\LVGL\lvgl.h ..\LVGL\src\misc\lv_log.h \
+  ..\LVGL\src\misc\..\lv_conf_internal.h ..\LVGL\src\lv_conf_kconfig.h \
+  ..\LVGL\lv_conf.h ..\LVGL\src\misc\lv_types.h \
+  ..\LVGL\src\misc\lv_timer.h ..\LVGL\src\misc\..\hal\lv_hal_tick.h \
   ..\LVGL\src\misc\..\hal\..\lv_conf_internal.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\LVGL\src\misc\lv_math.h ..\LVGL\src\misc\lv_mem.h \

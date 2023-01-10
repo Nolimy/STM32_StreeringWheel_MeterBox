@@ -45,6 +45,7 @@ extern lv_obj_t * ui_speedNum;
 extern lv_obj_t * ui_speedUnitLable;
 
 extern uint8_t barFlag;
+extern uint32_t speed;
 
 LV_IMG_DECLARE(ui_img_splashmini_png);    // assets\splashmini.png
 
@@ -60,6 +61,8 @@ LV_FONT_DECLARE(ui_font_PlayFairSmall);
 
 void ui_init(void);
 void sendEventCode();
+
+
 
 #ifdef __cplusplus
 } /*extern "C"*/

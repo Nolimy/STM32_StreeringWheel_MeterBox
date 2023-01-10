@@ -32,6 +32,7 @@ lv_obj_t * ui_speedUnitLable;
 lv_obj_t * ui_speedMeter;
 
 uint32_t BAR_LOAD_OVER;
+uint32_t speed;
 uint8_t barFlag = 1;
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -48,7 +49,10 @@ static void set_value(void * bar, int32_t v)
 {
     lv_bar_set_value(bar, v, LV_ANIM_OFF);
 }
-
+static void meter_set_value(void * indicator, int32_t v)
+{
+	lv_meter_set_indicator_end_value(ui_speedMeter, indicator, v);
+}
 
 void ui_event_startup(lv_event_t * e)
 {
@@ -67,6 +71,8 @@ void sendEventCode()
 		lv_event_send(ui_startup, BAR_LOAD_OVER, NULL);
 	}
 }
+
+
 ///////////////////// SCREENS ////////////////////
 void ui_startup_screen_init(void)
 {
@@ -90,6 +96,7 @@ void ui_startup_screen_init(void)
     lv_anim_set_exec_cb(&a, set_value);
 		lv_anim_set_time(&a, 4000);
 		lv_anim_start(&a);
+		//lv_anim_set_ready_cb(&a, sendEventCode);
 
     ui_startupLogo = lv_img_create(ui_startup);
     lv_img_set_src(ui_startupLogo, &ui_img_splashmini_png);
@@ -126,23 +133,23 @@ void ui_home_screen_init(void)
 		lv_obj_set_size(ui_speedMeter, 200, 200);
 		 /*Add a scale first*/
     lv_meter_scale_t * scale = lv_meter_add_scale(ui_speedMeter);
-    lv_meter_set_scale_ticks(ui_speedMeter, scale, 90, 0, 0, lv_color_hex(0x000000));//set the minor tick
-    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x41A0FF), -100);
+    lv_meter_set_scale_ticks(ui_speedMeter, scale, 60, 0, 0, lv_color_hex(0x000000));//set the minor tick
+    lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x1772b4), -100);
     lv_meter_set_scale_range(ui_speedMeter, scale, 0, 120, 270, 90);
-		lv_meter_indicator_t * indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x41A0FF), 0);
+		lv_meter_indicator_t * indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x1772b4), 0);
 		/*Create an animation to set the value*/
-//    lv_anim_t a;
-//    lv_anim_init(&a);
-//    lv_anim_set_exec_cb(&a, set_value);
-//    lv_anim_set_values(&a, 0, 120);
-//    lv_anim_set_repeat_delay(&a, 500);
-//    lv_anim_set_playback_delay(&a, 100);
-//    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_exec_cb(&a, meter_set_value);
+    lv_anim_set_values(&a, 0, 100);
+    //lv_anim_set_repeat_delay(&a, 500);
+    //lv_anim_set_playback_delay(&a, 100);
+    //lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
 
-//    lv_anim_set_time(&a, 2000);
-//    lv_anim_set_playback_time(&a, 500);
-//    lv_anim_set_var(&a, indic1);
-//    lv_anim_start(&a);
+    lv_anim_set_time(&a, 0);
+    //lv_anim_set_playback_time(&a, 500);
+    lv_anim_set_var(&a, indic1);
+    lv_anim_start(&a);
 		
 		
 		

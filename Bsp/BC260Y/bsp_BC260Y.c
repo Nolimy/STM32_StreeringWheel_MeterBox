@@ -9,7 +9,6 @@ uint8_t Uart1_Rx_Cnt = 0;  //接收缓冲计数
 uint8_t Uart3_Rx_Cnt = 0;  //接收缓冲计数
 uint8_t okFlag = 0; //是否查询OK字符标志位
 
-struct RacingCarData racingCarData;
 /*失败： 0  成功 ： 1  */
 uint8_t cmdToBC26Y(char *strSource, char *strTarget, uint8_t okCheck)
 {
@@ -156,9 +155,9 @@ void MQTT_Pubdata(char *json)
 }
 //FrontSpeed,PedalTravel,batAlarm,MotorSpeed,batTemp,batLevel,gearMode,carMode,time_Count,batVol,carTravel,mcu1Temp,mcu2Temp,breakTravel,lmotorTemp,rmotorTemp,lmotorSpeed,rmotorSpeed,motorTemp
 
-void jsonPack(void)//json打包 
+void jsonPack(void)//json打包 分段 heap太小一次性打包不下
 {
-	char json[] = "{\"cSpeed\": %d,\"Pos\": %d,\"bAlarm\": %d,\"lmSpeed\": %d,\"rmSpeed\": %d,\"bTemp\": %d,\"bLevel\": %d,\"gMode\": %d,\"cMode\": %d,\"timeCount\": %d,\"batVol\": %d,\"carDistce\": %d,\"mcu1Temp\": %d,\"mcu2Temp\": %d,\"brakeTravel\": %d,\"lmoTemp\": %d,\"rmoTemp\": %d}";
+	char json[] = "{\"cSpeed\": %d,\"Pos\": %d,\"bAlarm\": %d,\"lmSpeed\": %d,\"rmSpeed\": %d,\"bTemp\": %d,\"bLevel\": %d,\"gMode\": %d,\"cMode\": %d,\"lmTorque\":%d,\"rmTorque\":%d,\"batVol\": %d,\"carDistce\": %d,\"mcu1Temp\": %d,\"mcu2Temp\": %d,\"brakeTravel\": %d,\"lmoTemp\": %d,\"rmoTemp\": %d}";
 	char t_json[256];
 	sprintf(t_json, json, racingCarData.FrontSpeed,\
 	racingCarData.PedalTravel, \
@@ -169,7 +168,8 @@ void jsonPack(void)//json打包
 	racingCarData.batLevel, \
 	racingCarData.gearMode, \
 	racingCarData.carMode, \
-	racingCarData.timeCount, \
+	racingCarData.l_motor_torque, \
+	racingCarData.r_motor_torque, \
 	racingCarData.batVol, \
 	racingCarData.carTravel, \
 	racingCarData.mcu1Temp, \
@@ -183,6 +183,77 @@ void jsonPack(void)//json打包
 	memset(t_json,0x00,sizeof(t_json)); //清空数组
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART1)
+	{
+		if(Uart1_Rx_Cnt >= 255)  //溢出判断
+			{
+				Uart1_Rx_Cnt = 0;
+				memset(RxBuffer1,0x00,sizeof(RxBuffer1));
+				HAL_UART_Transmit(&huart1, (uint8_t *)"stack Over Flow\r\n", 10,0xFFFF);
+			}
+			else
+			{
+				RxBuffer1[Uart1_Rx_Cnt++] = aRxBuffer1;   //接收数据转存
 
+				if((RxBuffer1[Uart1_Rx_Cnt-1] == 0x0A)&&(RxBuffer1[Uart1_Rx_Cnt-2] == 0x0D)) //判断结束位
+				{
+					//HAL_UART_Transmit(&huart1, (uint8_t *)&RxBuffer1, Uart1_Rx_Cnt,0xFFFF); //将收到的信息发送出去
+					HAL_UART_Transmit(&huart3, (uint8_t *)&RxBuffer1, Uart1_Rx_Cnt,0xFFFF); //将收到的信息发送出去
+		      //while(HAL_UART_GetState(&huart1) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
+					while(HAL_UART_GetState(&huart3) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
+					Uart1_Rx_Cnt = 0;
+					memset(RxBuffer1,0x00,sizeof(RxBuffer1)); //清空数组
+				}
+			}
 
+			HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer1, 1);   //再开启接收中断
+
+	}
+	if(huart->Instance == USART3)
+	{
+			//if(Uart3RxOverFlag == 0)
+			{
+				if(Uart3_Rx_Cnt >= 255)  //溢出判断
+				{
+					Uart3_Rx_Cnt = 0;
+					memset(RxBuffer3,0x00,sizeof(RxBuffer3));
+					HAL_UART_Transmit(&huart3, (uint8_t *)"stack Over Flow\r\n", 10,0xFFFF);
+				}
+				else
+				{
+					RxBuffer3[Uart3_Rx_Cnt++] = aRxBuffer3;   //接收数据转存
+					if((RxBuffer3[Uart3_Rx_Cnt-1] == 0x0A)&&(RxBuffer3[Uart3_Rx_Cnt-2] == 0x0D)&&Uart3_Rx_Cnt!=2) //判断结束位\r\n
+					{
+						if(strcmp((const char*)RxBuffer3,(const char*)"\r\n") == 0 ||strcmp((const char*)RxBuffer3,(const char*)" ") == 0 || strlen(RxBuffer3) == 0)
+						{
+							//过滤无效字符串
+							memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
+							HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
+						}
+						if(strstr((const char*)RxBuffer3,(const char*)"OK"))	
+						{
+							okFlag = 1;
+							memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
+							HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
+						}
+						if(RxBuffer3[0] == 0x0D && RxBuffer3[1] == 0x0A)
+						{
+							RxBuffer3[0] = '-';
+							RxBuffer3[1] = '-';
+							strcpy(Buffer, RxBuffer3);
+						}
+						//HAL_UART_Transmit(&huart1, (uint8_t *)&RxBuffer3, Uart3_Rx_Cnt,0xFFFF); //将收到的信息发送出去
+						//			while(HAL_UART_GetState(&huart1) == HAL_UART_STATE_BUSY_TX);//检测UART发送结束
+						Uart3_Rx_Cnt = 0;
+						//memset(RxBuffer3,0x00,sizeof(RxBuffer3)); //清空数组
+					}
+				}
+			HAL_UART_Receive_IT(&huart3, (uint8_t *)&aRxBuffer3, 1);   //再开启接收中断
+		}
+
+		
+	}
+}
 
