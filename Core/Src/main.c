@@ -216,7 +216,6 @@ int main(void)
   {
 		if(barFlag == 1)
 			sendEventCode();	
-		uploadCarData();
 #if LVGL_DEBUG		
 		lv_task_handler(); // lvgl的事务处理	
 #endif

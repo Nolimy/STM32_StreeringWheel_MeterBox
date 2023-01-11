@@ -2288,11 +2288,6 @@
               <FilePath>..\LVGL\ui_design\ui_font_PlayFairBig.c</FilePath>
             </File>
             <File>
-              <FileName>ui_font_PlayFairSmall.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\LVGL\ui_design\ui_font_PlayFairSmall.c</FilePath>
-            </File>
-            <File>
               <FileName>ui_font_icon_bettery.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\LVGL\ui_design\ui_font_icon_bettery.c</FilePath>

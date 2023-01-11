@@ -30,7 +30,7 @@ extern lv_obj_t * ui_home;
 extern lv_obj_t * ui_logoLable;
 extern lv_obj_t * ui_rpmNum;
 extern lv_obj_t * ui_rpmUnit;
-extern lv_obj_t * ui_nGearLable;
+extern lv_obj_t * ui_gearLable;
 extern lv_obj_t * ui_socValue;
 extern lv_obj_t * ui_socIcon;
 extern lv_obj_t * ui_speedMode;

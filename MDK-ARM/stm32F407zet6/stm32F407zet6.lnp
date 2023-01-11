@@ -207,7 +207,6 @@
 "stm32f407zet6\ui_font_bignumber40.o"
 "stm32f407zet6\ui_font_fastone.o"
 "stm32f407zet6\ui_font_playfairbig.o"
-"stm32f407zet6\ui_font_playfairsmall.o"
 "stm32f407zet6\ui_font_icon_bettery.o"
 "stm32f407zet6\ui_font_bignumber_18.o"
 "stm32f407zet6\ui_font_bignumber_25.o"
