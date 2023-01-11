@@ -37,9 +37,6 @@
 #include "lv_port_disp.h"
 #include "ui.h" 
 
-
-
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -195,9 +192,6 @@ int main(void)
 	//lv_port_fs_init();
 	//lv_bmp_init();
 	ui_init();
-	
-	
-	
 #endif
 #if SPI_FATFS_DEBUG
 	formatSTAT = f_mkfs("0:",0,work,sizeof work);
@@ -221,15 +215,8 @@ int main(void)
   while (1)
   {
 		if(barFlag == 1)
-			sendEventCode();
-		if(barFlag == 0)
-		{
-			speed+=10;
-			if(speed == 120)
-				speed = 0;
-		}
-			
-		//CAN1_Send_Test();		
+			sendEventCode();	
+		uploadCarData();
 #if LVGL_DEBUG		
 		lv_task_handler(); // lvgl的事务处理	
 #endif

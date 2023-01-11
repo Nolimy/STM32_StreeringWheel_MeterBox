@@ -30,22 +30,27 @@ extern lv_obj_t * ui_home;
 extern lv_obj_t * ui_logoLable;
 extern lv_obj_t * ui_rpmNum;
 extern lv_obj_t * ui_rpmUnit;
-extern lv_obj_t * ui_rGearLable;
 extern lv_obj_t * ui_nGearLable;
-extern lv_obj_t * ui_dGearLable;
 extern lv_obj_t * ui_socValue;
 extern lv_obj_t * ui_socIcon;
 extern lv_obj_t * ui_speedMode;
 extern lv_obj_t * ui_ecoMode;
-extern lv_obj_t * ui_batAlarm;
-extern lv_obj_t * ui_;
-extern lv_obj_t * ui_Screen2_Label12;
-extern lv_obj_t * ui_Screen2_Label13;
+extern lv_obj_t * ui_iotStatus;
+extern lv_obj_t * ui_batTemp;
+extern lv_obj_t * ui_lMotorTemp;
+extern lv_obj_t * ui_rMotorTemp;
 extern lv_obj_t * ui_speedNum;
 extern lv_obj_t * ui_speedUnitLable;
+extern lv_obj_t * ui_bespLapTime;
+extern lv_obj_t * ui_lapTime;
+extern lv_obj_t * ui_bestLapTimeLable;
+extern lv_obj_t * ui_lapTimeLable;
+extern lv_obj_t * ui_speedMeter;
 
 extern uint8_t barFlag;
 extern uint32_t speed;
+
+extern uint32_t SPEED_CHANGED;
 
 LV_IMG_DECLARE(ui_img_splashmini_png);    // assets\splashmini.png
 

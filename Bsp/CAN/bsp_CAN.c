@@ -1,5 +1,7 @@
 #include "bsp_CAN.h"
 #include "string.h"
+#include "bsp_BC260Y.h"
+#include "ui.h"
 
 #define  SPEED_RATIO  4 	//主减速比
 #define  PI  3.14	       	//圆周率
@@ -7,6 +9,7 @@
 #define  NUM_OF_TEETH 20.0    //码盘齿数
 
 uint8_t upSpeedFlag = 1;
+uint8_t uploadFlag = 1;
 struct RacingCarData racingCarData;
 
 void CANFilter_Config(void)//无论发啥我都照单全收。
@@ -39,18 +42,22 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	HAL_StatusTypeDef	status;
 	
 	if (hcan == &hcan1) {	
-#if Receiver
+
 		status = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxMessage, data);
-#endif
+
 		if (HAL_OK == status){   
+			#if Receiver
 			decodeCanData(RxMessage.StdId, data);
-			printf("--->Data Receieve!\r\n");
-			printf("RxMessage.StdId is %#x\r\n",  RxMessage.StdId);
-			printf("data[0] is 0x%02x\r\n", data[0]);
-			printf("data[1] is 0x%02x\r\n", data[1]);
-			printf("data[2] is 0x%02x\r\n", data[2]);
-			printf("data[3] is 0x%02x\r\n", data[3]);
-			printf("<---\r\n");  
+			lv_event_send(ui_speedMeter, SPEED_CHANGED, NULL);
+			uploadFlag = 1;
+			#endif
+//			printf("--->Data Receieve!\r\n");
+//			printf("RxMessage.StdId is %#x\r\n",  RxMessage.StdId);
+//			printf("data[0] is 0x%02x\r\n", data[0]);
+//			printf("data[1] is 0x%02x\r\n", data[1]);
+//			printf("data[2] is 0x%02x\r\n", data[2]);
+//			printf("data[3] is 0x%02x\r\n", data[3]);
+//			printf("<---\r\n");  
 		}
 	}
 }
@@ -282,5 +289,14 @@ void decodeCanData(uint32_t canID, uint8_t *canData)
 			racingCarData.batVol = (canData[6] + canData[5] * 256) / 10;
 			break;	
 	}	
+}
+
+void uploadCarData()
+{
+		if(uploadFlag)
+		{
+			jsonPack();
+			uploadFlag = 0;
+		}
 }
 #endif

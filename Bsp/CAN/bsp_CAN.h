@@ -14,6 +14,7 @@ void CAN1_Send(uint32_t CAN_ID, uint8_t *CAN_DATA);
 
 void CANFilter_Config(void);
 void CanFilterInit(void);
+void uploadCarData();
 
 #define Transmitter 0
 #define Receiver    1
@@ -57,4 +58,6 @@ struct RacingCarData
 	
 };
 extern struct RacingCarData racingCarData;
+extern uint8_t uploadFlag;
+
 #endif //__BSP_CAN_H__
