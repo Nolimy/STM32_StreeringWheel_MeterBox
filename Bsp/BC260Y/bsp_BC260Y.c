@@ -8,6 +8,7 @@ char Buffer[RXBUFFERSIZE];
 uint8_t Uart1_Rx_Cnt = 0;  //接收缓冲计数
 uint8_t Uart3_Rx_Cnt = 0;  //接收缓冲计数
 uint8_t okFlag = 0; //是否查询OK字符标志位
+uint8_t MQTTinitOkFlag = 0; //初始化是否OK标志位
 
 /*失败： 0  成功 ： 1  */
 uint8_t cmdToBC26Y(char *strSource, char *strTarget, uint8_t okCheck)
@@ -102,7 +103,7 @@ uint8_t MQTT_Init()
 					& cmdToBC26Y("AT+QMTCONN=0,\"BC260Y\",\"lingyun\",\"lingyun666\"", "N: 0,0", 0)\
 					& cmdToBC26Y("AT+QMTPUB=0,0,0,1,\"hello\",11,\"hello world\"","0,0,0", 0);
 }
-void mqttServiceStartup()
+uint8_t mqttServiceStartup()
 {
 	uint8_t initFlag;
 	
@@ -119,6 +120,7 @@ void mqttServiceStartup()
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);  //拉低，亮灯。
 		usartTxFlag = 1;
 		printf("*********************BC260Y INIT OK*********************\r\n");
+		//return 1;
 	}
 	
 	else
@@ -126,6 +128,7 @@ void mqttServiceStartup()
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);    //拉高，灭灯。
 		usartTxFlag = 1;
 		printf("*********************BC260Y Init Failure!*********************\r\n");
+		return 0;
 	}	
 	
 	initFlag = MQTT_Init();
@@ -134,13 +137,15 @@ void mqttServiceStartup()
 		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);  //拉低，亮灯。
 		usartTxFlag = 1;
 		printf("*********************MQTT INIT OK*********************\r\n");
+		return 1;
 	}
 	
 	else
 	{
-		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  //拉低，亮灯。
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  //拉高，灭灯。
 		usartTxFlag = 1;
 		printf("*********************MQTT Init Failure!*********************\r\n");
+		return 0;
 	}	
 }
 //发布消息 QOS = 0

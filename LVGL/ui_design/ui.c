@@ -7,9 +7,11 @@
 #include "ui_helpers.h"
 #include "ui_comp.h"
 #include "bsp_CAN.h"
+#include "bsp_BC260Y.h"
 
 ///////////////////// VARIABLES ////////////////////
 void ui_event_startup(lv_event_t * e);
+void iotStatusUpdate(lv_event_t * e);
 static void meter_set_value(void * indicator, int32_t v);
 lv_obj_t * ui_startup;
 lv_obj_t * ui_startupBar;
@@ -34,11 +36,18 @@ lv_obj_t * ui_lapTime;
 lv_obj_t * ui_bestLapTimeLable;
 lv_obj_t * ui_lapTimeLable;
 lv_obj_t * ui_speedMeter;
+
 lv_meter_indicator_t * indic1;
+lv_timer_t * lapTimer = NULL;
+
+uint8_t msec = 0;
+uint8_t sec = 0;
+uint8_t min = 0;
+
 
 uint32_t BAR_LOAD_OVER;
 uint32_t SPEED_CHANGED;
-uint32_t speed;
+uint32_t MQTT_INIT_OK;
 uint8_t barFlag = 1;
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -61,7 +70,29 @@ static void meterAnimation()
     lv_anim_set_var(&a, indic1);
     lv_anim_start(&a);
 }
-///////////////////// FUNCTIONS ////////////////////
+///////////////////// FUNCTIONS //////////////////// 
+void lapTimer_cb(lv_timer_t * tmr)
+{
+	msec+=1;
+	if(msec == 100)
+	{
+		msec = 0;
+		sec+=1;
+	}
+	if(sec == 60)
+	{
+		min+=1;
+	}
+	if(min == 60)
+	{
+		msec = 0;
+		min = 0;
+		sec = 0;
+	}
+	
+	//set label
+	lv_label_set_text_fmt(ui_lapTime, "%02d:%02d:%02d", min, sec, msec);
+}
 static void set_value(void * bar, int32_t v)
 {
     lv_bar_set_value(bar, v, LV_ANIM_OFF);
@@ -99,11 +130,45 @@ void ui_speedMeter_update(lv_event_t *e)
 			lv_label_set_text(ui_gearLable, "R");
 		else
 			lv_label_set_text(ui_gearLable, "D");
-		//uploadCarData();
-		
-	}
+		if(racingCarData.carMode == 0)
+		{
+			lv_obj_set_style_text_color(ui_speedMode, lv_color_hex(0x6464F1), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_speedMode, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_speedMode, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+			
+			lv_obj_set_style_text_color(ui_ecoMode, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_ecoMode, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_ecoMode, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+		else
+		{
+			lv_obj_set_style_text_color(ui_speedMode, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_speedMode, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_speedMode, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+			
+			lv_obj_set_style_text_color(ui_ecoMode, lv_color_hex(0x80FF80), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_ecoMode, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_ecoMode, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+	}	
 }
-
+void iotStatusUpdate(lv_event_t * e)
+{
+	lv_event_code_t event_code = lv_event_get_code(e);
+  lv_obj_t * target = lv_event_get_target(e);
+	if(event_code == MQTT_INIT_OK){
+		if(MQTTinitOkFlag){
+			lv_obj_set_style_text_color(ui_iotStatus, lv_color_hex(0x8080F1), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_iotStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_iotStatus, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+		else{
+			lv_obj_set_style_text_color(ui_iotStatus, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_opa(ui_iotStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+			lv_obj_set_style_text_font(ui_iotStatus, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
+		}
+	}		
+}
 void sendEventCode(uint32_t EVENT_CODE)
 {
 	if(lv_bar_get_value(ui_startupBar) == 100)
@@ -241,7 +306,7 @@ void ui_home_screen_init(void)
     ui_ecoMode = lv_label_create(ui_home);
     lv_obj_set_width(ui_ecoMode, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_ecoMode, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_ecoMode, 139);
+    lv_obj_set_x(ui_ecoMode, 150);
     lv_obj_set_y(ui_ecoMode, 72);
     lv_obj_set_align(ui_ecoMode, LV_ALIGN_CENTER);
     lv_label_set_text(ui_ecoMode, "");
@@ -377,10 +442,14 @@ void ui_home_screen_init(void)
     lv_meter_set_scale_major_ticks(ui_speedMeter, scale, 1, 3, 20, lv_color_hex(0x1772b4), -100);
     lv_meter_set_scale_range(ui_speedMeter, scale, 0, 120, 270, 90);
 		indic1 = lv_meter_add_arc(ui_speedMeter, scale, 20, lv_color_hex(0x1772b4), 0);
-
+		
+		
 
 		SPEED_CHANGED = lv_event_register_id();
-		lv_obj_add_event_cb(ui_speedMeter, ui_speedMeter_update, SPEED_CHANGED, NULL);
+		MQTT_INIT_OK = lv_event_register_id();
+		lv_obj_add_event_cb(ui_speedMeter, ui_speedMeter_update, LV_EVENT_ALL, NULL);
+		lv_obj_add_event_cb(ui_iotStatus, iotStatusUpdate, LV_EVENT_ALL, NULL);
+		lapTimer = lv_timer_create(lapTimer_cb, 10, 0);      // 运行周期为lvgl的10个滴答时钟
 }
 
 void ui_init(void)

@@ -17,13 +17,13 @@ extern uint8_t aRxBuffer3;   //接收中断缓冲
 extern uint8_t Uart1_Rx_Cnt;  //接收缓冲计数
 extern uint8_t Uart3_Rx_Cnt;  //接收缓冲计数
 extern uint8_t okFlag;
-
+extern uint8_t MQTTinitOkFlag;
 
 extern struct RacingCarData racingCarData;
 
 uint8_t BC260Y_init();
 uint8_t MQTT_Init();
-void mqttServiceStartup();
+uint8_t mqttServiceStartup();
 void jsonPack();
 
 #endif //__BSP_BC260Y_H__
