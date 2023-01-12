@@ -66,7 +66,7 @@ static void meterAnimation()
     lv_anim_set_exec_cb(&a, meter_set_value);
     lv_anim_set_values(&a, lastSpeed, racingCarData.FrontSpeed);
 		lastSpeed = racingCarData.FrontSpeed;
-    lv_anim_set_time(&a, 1000);
+    lv_anim_set_time(&a, 10);
     lv_anim_set_var(&a, indic1);
     lv_anim_start(&a);
 }
@@ -81,7 +81,9 @@ void lapTimer_cb(lv_timer_t * tmr)
 	}
 	if(sec == 60)
 	{
+		sec = 0;
 		min+=1;
+		
 	}
 	if(min == 60)
 	{
