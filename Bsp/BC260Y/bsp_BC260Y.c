@@ -154,6 +154,7 @@ void MQTT_Pubdata(char *json)
 	usartTxFlag = 2;
 	char overCh = 0x1a;
 	printf("AT+QMTPUB=0,0,0,1,\"hello\"\r\n");//发布主题
+	HAL_UART_AbortReceive_IT(&huart3);
 	HAL_Delay(10);
 	printf("%s\r\n",json);
 	printf("%c", overCh);
@@ -182,8 +183,8 @@ void jsonPack(void)//json打包 分段 heap太小一次性打包不下
 	racingCarData.brakeTravel, \
 	racingCarData.lmotorTemp, \
 	racingCarData.rmotorTemp);
-	usartTxFlag = 1;
-	printf("%s\r\n",t_json);
+	//usartTxFlag = 1;
+	//printf("%s\r\n",t_json);
 	MQTT_Pubdata(t_json);
 	memset(t_json,0x00,sizeof(t_json)); //清空数组
 }

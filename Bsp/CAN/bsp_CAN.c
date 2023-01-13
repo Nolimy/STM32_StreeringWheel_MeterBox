@@ -295,6 +295,8 @@ void uploadCarData()
 {
 		if(uploadFlag)
 		{
+			usartTxFlag = 1;
+			//printf("task1\r\n");
 			jsonPack();
 			uploadFlag = 0;
 		}
