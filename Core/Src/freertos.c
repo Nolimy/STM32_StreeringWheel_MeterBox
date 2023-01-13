@@ -31,6 +31,7 @@
 #include "lvgl.h"
 #include "lv_port_disp.h"
 #include "ui.h" 
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -135,10 +136,10 @@ void startIotUploadTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		usartTxFlag = 1;
+		//usartTxFlag = 1;
 		//printf("Here is Task 1\r\n");
 		uploadCarData();
-    osDelay(100);
+    osDelay(200);
   }
   /* USER CODE END startIotUploadTask */
 }

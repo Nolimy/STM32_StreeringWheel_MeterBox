@@ -172,7 +172,7 @@ int main(void)
 	HAL_GPIO_WritePin(BLT_OUT_GPIO_Port, BLT_OUT_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(BLT_RST_GPIO_Port, BLT_RST_Pin, GPIO_PIN_SET);	
 	CanFilterInit();
-	MQTTinitOkFlag = mqttServiceStartup();
+	//MQTTinitOkFlag = mqttServiceStartup();
 	//ws2812_blue(1);
 	//HAL_Delay(1000);
 	//ws2812_blue(2); 

@@ -1,2 +1,0 @@
-osThreadId iotUploadTaskHandle;
-osThreadId LVGL_TaskHandle;

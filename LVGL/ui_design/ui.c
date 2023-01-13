@@ -66,7 +66,7 @@ static void meterAnimation()
     lv_anim_set_exec_cb(&a, meter_set_value);
     lv_anim_set_values(&a, lastSpeed, racingCarData.FrontSpeed);
 		lastSpeed = racingCarData.FrontSpeed;
-    lv_anim_set_time(&a, 10);
+    lv_anim_set_time(&a, 5);
     lv_anim_set_var(&a, indic1);
     lv_anim_start(&a);
 }
@@ -109,7 +109,8 @@ void ui_event_startup(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == BAR_LOAD_OVER) {
-        _ui_screen_change(ui_home, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0);
+      _ui_screen_change(ui_home, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0);
+			lapTimer = lv_timer_create(lapTimer_cb, 5, 0);      // 运行周期为lvgl的10个滴答时钟
     }
 }
 
@@ -451,7 +452,7 @@ void ui_home_screen_init(void)
 		MQTT_INIT_OK = lv_event_register_id();
 		lv_obj_add_event_cb(ui_speedMeter, ui_speedMeter_update, LV_EVENT_ALL, NULL);
 		lv_obj_add_event_cb(ui_iotStatus, iotStatusUpdate, LV_EVENT_ALL, NULL);
-		lapTimer = lv_timer_create(lapTimer_cb, 10, 0);      // 运行周期为lvgl的10个滴答时钟
+		
 }
 
 void ui_init(void)
