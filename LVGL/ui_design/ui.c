@@ -58,7 +58,7 @@ uint8_t barFlag = 1;
 #endif
 
 ///////////////////// ANIMATIONS ////////////////////
-static void meterAnimation()
+void meterAnimation()
 {
 		static int8_t lastSpeed;
 	  lv_anim_t a;
@@ -110,7 +110,7 @@ void ui_event_startup(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == BAR_LOAD_OVER) {
       _ui_screen_change(ui_home, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0);
-			lapTimer = lv_timer_create(lapTimer_cb, 5, 0);      // 运行周期为lvgl的10个滴答时钟
+		lapTimer = lv_timer_create(lapTimer_cb, 10, 0);      // 运行周期为lvgl的10个滴答时钟
     }
 }
 
@@ -153,6 +153,7 @@ void ui_speedMeter_update(lv_event_t *e)
 			lv_obj_set_style_text_opa(ui_ecoMode, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 			lv_obj_set_style_text_font(ui_ecoMode, &ui_font_icon_bettery, LV_PART_MAIN | LV_STATE_DEFAULT);
 		}
+		
 	}	
 }
 void iotStatusUpdate(lv_event_t * e)

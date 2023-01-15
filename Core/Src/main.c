@@ -164,6 +164,7 @@ int main(void)
   MX_TIM1_Init();
   MX_CAN1_Init();
   MX_USART3_UART_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	//   LVGL任务定时器中断
 	HAL_TIM_Base_Start_IT(&htim3);	
@@ -206,7 +207,8 @@ int main(void)
 #endif
   /* USER CODE END 2 */
 
-  /* Call init function for freertos objects (in freertos.c) */
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
   /* Start scheduler */

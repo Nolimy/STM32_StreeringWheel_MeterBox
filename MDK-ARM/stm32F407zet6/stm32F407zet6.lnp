@@ -219,7 +219,7 @@
 "stm32f407zet6\stream_buffer.o"
 "stm32f407zet6\tasks.o"
 "stm32f407zet6\timers.o"
-"stm32f407zet6\cmsis_os.o"
+"stm32f407zet6\cmsis_os2.o"
 "stm32f407zet6\heap_4.o"
 "stm32f407zet6\port.o"
 "stm32f407zet6\retarget_io.o"
