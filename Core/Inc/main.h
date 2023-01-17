@@ -73,7 +73,6 @@ void Error_Handler(void);
 #define PWR_4G_GPIO_Port GPIOG
 #define SPI_CS1_Pin GPIO_PIN_6
 #define SPI_CS1_GPIO_Port GPIOB
-
 /* USER CODE BEGIN Private defines */
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
 #define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 

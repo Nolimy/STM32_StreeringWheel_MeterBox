@@ -220,5 +220,4 @@ stm32f407zet6/bsp_can.o: ..\Bsp\CAN\bsp_CAN.c ..\Bsp\CAN\bsp_CAN.h \
   ..\LVGL\src\extra\widgets\imgbtn\lv_imgbtn.h \
   ..\LVGL\src\extra\widgets\imgbtn\..\..\..\lvgl.h \
   ..\LVGL\src\extra\widgets\span\lv_span.h \
-  ..\LVGL\src\extra\widgets\span\..\..\..\lvgl.h \
-  ..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.h
+  ..\LVGL\src\extra\widgets\span\..\..\..\lvgl.h
